@@ -10,6 +10,13 @@ void main() async {
 
   runApp(MaterialApp(
     home: Home(),
+    theme: ThemeData(
+      hintColor: Colors.lightGreen,
+      primaryColor: Colors.black,
+      inputDecorationTheme: InputDecorationTheme(
+        enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.lightGreen))
+      )
+    ),
   ));
 }
 
@@ -19,39 +26,61 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  double dolar;
+  double euro;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Conversor de Moedas"),
-        backgroundColor: Colors.amberAccent,
+        backgroundColor: Colors.lightGreen,
         centerTitle: true,
       ),
       body: FutureBuilder<Map>(
         future: getData(),
-        builder: (contenxt, snapshop) {
-          switch (snapshop.connectionState) {
+        builder: (contenxt, snapshot) {
+          switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
               return Center(
                   child: Text(
                 "Carregando dados.",
-                style: TextStyle(color: Colors.amber, fontSize: 25.0),
+                style: TextStyle(color: Colors.lightGreen, fontSize: 25.0),
                 textAlign: TextAlign.center,
               ));
             default:
-              if (snapshop.hasError) {
+              if (snapshot.hasError) {
                 return Center(
                   child: Text(
                     "Erro ao carregar dados.",
-                    style: TextStyle(color: Colors.amber, fontSize: 25.0),
+                    style: TextStyle(color: Colors.lightGreen, fontSize: 25.0),
                     textAlign: TextAlign.center,
                   ),
                 );
               } else {
-                return Container(
-                  color: Colors.lightBlueAccent,
+                dolar = snapshot.data["results"]["currencies"]["USD"]["buy"];
+                euro = snapshot.data["results"]["currencies"]["EUR"]["buy"];
+                return SingleChildScrollView(
+                  padding: EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Icon(Icons.monetization_on, size: 150.0, color: Colors.lightGreen),
+                      TextField(
+                        decoration: InputDecoration(
+                          labelText: "Reais",
+                          labelStyle: TextStyle(color: Colors.lightGreen),
+                          border: OutlineInputBorder(),
+                          prefixText: "R\$: "
+                        ),
+                        style: TextStyle(
+                          color: Colors.lightGreen, fontSize: 25.0
+                        ),
+                      )
+                    ],
+                  ),
                 );
               }
           }
